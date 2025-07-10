@@ -16,6 +16,11 @@ RUN apt-get update && apt-get install -y \
     libxrender-dev \
     libgomp1 \
     ffmpeg \
+    texlive-latex-base \
+    texlive-latex-extra \
+    texlive-fonts-recommended \
+    dvipng \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # 작업 디렉터리 설정
@@ -44,7 +49,7 @@ VOLUME ["/app/media"]
 
 # 헬스 체크
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8005/health || exit 1
+    CMD curl -f http://localhost:8005/health_check -X POST -H "Content-Type: application/json" -d '{}' || exit 1
 
 # OpenAPI proxy 서버 실행
 CMD ["mcpo", "--host", "0.0.0.0", "--port", "8005", "--cors-allow-origins", "*", "--", "python", "src/manim_server.py"]
