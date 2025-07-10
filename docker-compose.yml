@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  manim-mcp-openapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: manim-mcp-openapi
+    ports:
+      - "8005:8005"
+    volumes:
+      - ./media:/app/media
+      - ./src:/app/src
+    environment:
+      - MANIM_EXECUTABLE=manim
+      - MCP_PROJECT_ROOT=/app
+      - PYTHONPATH=/app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - manim-network
+
+networks:
+  manim-network:
+    driver: bridge
